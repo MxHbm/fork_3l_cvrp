@@ -191,6 +191,7 @@ void from_json(const json& j, BranchAndCutParams& params)
     j.at("ActivateHeuristic").get_to(params.ActivateHeuristic);
     j.at("ActivateMemoryManagement").get_to(params.ActivateMemoryManagement);
     j.at("SimpleVersion").get_to(params.SimpleVersion);
+    j.at("TrackIncrementalFeasibilityProperty").get_to(params.TrackIncrementalFeasibilityProperty);
 }
 
 void to_json(json& j, const BranchAndCutParams& params)
@@ -208,7 +209,8 @@ void to_json(json& j, const BranchAndCutParams& params)
              {"TimeLimit", params.TimeLimits},
              {"ActivateHeuristic", params.ActivateHeuristic},
              {"ActivateMemoryManagement", params.ActivateMemoryManagement},
-             {"SimpleVersion", params.SimpleVersion}};
+             {"SimpleVersion", params.SimpleVersion},
+             {"TrackIncrementalFeasibilityProperty", params.TrackIncrementalFeasibilityProperty}};
 }
 
 void from_json(const json& j, UserCutParams& params)

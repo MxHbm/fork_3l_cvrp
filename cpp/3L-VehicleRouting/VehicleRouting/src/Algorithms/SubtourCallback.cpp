@@ -1029,7 +1029,10 @@ LoadingStatus
     mClock.end();
     CallbackTracker.UpdateElement(CallbackElement::TailPathInequality, mClock.elapsed());
 
-    mLoadingChecker->AddTailTournamentConstraint(subtour.Sequence);
+    if (mInputParameters->BranchAndCut.TrackIncrementalFeasibilityProperty)
+    {
+        mLoadingChecker->AddTailTournamentConstraint(subtour.Sequence);
+    }
 
     // Check reverse path to
     //   - create new feasible route, or
