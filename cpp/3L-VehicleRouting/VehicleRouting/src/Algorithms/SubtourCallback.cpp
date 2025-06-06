@@ -620,20 +620,31 @@ bool SubtourCallback1D::CheckRoutes()
         mClock.end();
         CallbackTracker.UpdateElement(CallbackElement::MinNumVehicles, mClock.elapsed());
 
-        if (subtour.ConnectedToDepot && minVehicles < 2)
+        if (subtour.ConnectedToDepot)
         {
-            mLoadingChecker->AddFeasibleSequenceFromOutside(subtour.Sequence);
+            CallbackTracker.Counter[CallbackElement::Connected]++;
 
-            continue;
+            if (minVehicles < 2)
+            {
+                mLoadingChecker->AddFeasibleSequenceFromOutside(subtour.Sequence);
+
+                continue;
+            }
         }
 
         mClock.start();
         AddLazyConstraints({mLazyConstraintsGenerator->CreateConstraint(CutType::SEC, subtour.Sequence, minVehicles)});
         cutAdded = true;
         mClock.end();
-        CallbackTracker.UpdateElement(CallbackElement::MinVehApproxInf, mClock.elapsed());
 
-        cutAdded = true;
+        if (subtour.ConnectedToDepot)
+        {
+            CallbackTracker.UpdateElement(CallbackElement::MinVehApproxInf, mClock.elapsed());
+        }
+        else
+        {
+            CallbackTracker.UpdateElement(CallbackElement::Disconnected, mClock.elapsed());
+        }
     }
 
     return !cutAdded;
