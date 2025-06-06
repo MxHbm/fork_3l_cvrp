@@ -5,6 +5,8 @@
 #include "Algorithms/SubtourCallback.h"
 #include "CommonBasics/Helper/ModelServices.h"
 
+#include "nlohmann/json.hpp"
+
 #include <algorithm>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <cstddef>
@@ -19,6 +21,28 @@ namespace Algorithms
 {
 using namespace Cuts;
 using namespace Heuristics::Improvement;
+
+void SubtourCallback::SaveFeasibleAndPotentiallyExcludedRoutes() const
+{
+    const auto allRoutes = mLoadingChecker->GetFeasibleRoutesWithTimeStamps();
+    const auto allTournamentTailConstraints = mLoadingChecker->GetTailTournamentConstraints();
+
+    nlohmann::json jsonObj;
+    jsonObj["AllFeasibleRoutes"] = allRoutes;
+    jsonObj["AllTournamentTailConstraints"] = allTournamentTailConstraints;
+
+    std::ofstream outputFile;
+    outputFile.open(mOutputPath + "/Routes_" + mInstance->Name + ".json");
+    if (outputFile.is_open())
+    {
+        outputFile << jsonObj.dump();
+        outputFile.close();
+    }
+    else
+    {
+        std::cerr << "unable to open the route file!\n ";
+    }
+}
 
 void SubtourCallback::callback()
 {
@@ -1004,6 +1028,8 @@ LoadingStatus
     AddLazyConstraints({mLazyConstraintsGenerator->CreateConstraint(CutType::TailTournament, subtour.Sequence)});
     mClock.end();
     CallbackTracker.UpdateElement(CallbackElement::TailPathInequality, mClock.elapsed());
+
+    mLoadingChecker->AddTailTournamentConstraint(subtour.Sequence);
 
     // Check reverse path to
     //   - create new feasible route, or

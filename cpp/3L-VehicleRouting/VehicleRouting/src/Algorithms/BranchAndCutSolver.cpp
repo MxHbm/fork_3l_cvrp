@@ -672,6 +672,9 @@ bool BranchAndCutSolver::CheckPath(const Collections::IdVector& path, Container&
     if (statusComplete == LoadingStatus::Infeasible)
     {
         mInfeasibleTailPaths.emplace_back(0, path.front(), path.back());
+
+        Collections::IdVector sequence = {path.front(), path.back()};
+        mLoadingChecker->AddTailTournamentConstraint(sequence);
     }
 
     return true;
@@ -892,6 +895,8 @@ void BranchAndCutSolver::Solve()
     branchAndCut.Solve(mInputParameters.MIPSolver);
 
     mTimer.BranchAndCut = std::chrono::system_clock::now() - start;
+
+    callback->SaveFeasibleAndPotentiallyExcludedRoutes();
 
     auto statistics = SolverStatistics(branchAndCut.GetRuntime(),
                                        branchAndCut.GetMIPGap(),

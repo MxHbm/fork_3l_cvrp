@@ -283,10 +283,19 @@ boost::dynamic_bitset<> LoadingChecker::MakeBitset(size_t size, const Collection
     return set;
 };
 
+double LoadingChecker::GetElapsedTime()
+{
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - mStartTime;
+    return elapsed.count();
+}
+
 void LoadingChecker::AddFeasibleRoute(const Collections::IdVector& route)
 {
     mFeasSequences[Parameters.LoadingProblem.LoadingFlags].insert(route);
     mCompleteFeasSeq.push_back(route);
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteFeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
 }
 
 void LoadingChecker::AddInfeasibleSequenceEP(const Collections::IdVector& sequence)
