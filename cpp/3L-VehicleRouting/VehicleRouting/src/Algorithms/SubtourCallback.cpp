@@ -508,9 +508,13 @@ void SubtourCallback::AddCuts(const std::vector<Cut>& cuts)
 
         if (cut.Type == CutType::RCC)
         {
+            // Since we are separating cuts in fractional solutions, it is appropriate to add them using AddCut. In
+            // fact, we also exclude integer solutions with our cuts, which is why we use the AddLazy method. See
+            // also:
+            // https://support.gurobi.com/hc/en-us/community/posts/32481416745745-Ignored-lazy-constraint-leads-to-wrong-solution-cont
             if (mCurrentNode == 0)
             {
-                this->addCut(lhs >= cut.RHS);
+                this->addLazy(lhs >= cut.RHS); // addCut
                 CallbackTracker.CutCounter[cut.Type]++;
             }
             else
@@ -522,14 +526,14 @@ void SubtourCallback::AddCuts(const std::vector<Cut>& cuts)
                 }
                 else
                 {
-                    this->addCut(lhs >= cut.RHS);
+                    this->addLazy(lhs >= cut.RHS); // addCut
                     CallbackTracker.CutCounter[cut.Type]++;
                 }
             }
         }
         else
         {
-            this->addCut(lhs >= cut.RHS);
+            this->addLazy(lhs >= cut.RHS); // addCut
             CallbackTracker.CutCounter[cut.Type]++;
         }
     }
