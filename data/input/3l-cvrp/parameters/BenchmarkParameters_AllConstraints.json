@@ -12,39 +12,40 @@
         "IntraRouteFullEnumThreshold": 6,
         "MinVehicleLiftingThreshold": 0.5,
         "SetPartHeurThreshold": 20,
+        "TrackIncrementalFeasibilityProperty": true,
         "StartSolution": "ModifiedSavings",
         "TimeLimit": [
             [
-                "Exact",
-                1.7976931348623157e+308
+              "Exact",
+              600.0
             ],
             [
-                "ExactLimit",
+              "ExactLimit",
+              30.0
+            ],
+            [
+              "Heuristic",
                 1
             ],
             [
-                "Heuristic",
-                1
+              "TwoPath",
+              10.0
             ],
             [
-                "TwoPath",
-                4
+              "MinInfSet",
+              10.0
             ],
             [
-                "MinInfSet",
-                4
+              "RegularPath",
+              10.0
             ],
             [
-                "RegularPath",
-                1
+              "MinInfPath",
+              10.0
             ],
             [
-                "MinInfPath",
-                1
-            ],
-            [
-                "ReversePath",
-                1
+              "ReversePath",
+              10.0
             ]
         ]
     },
@@ -82,7 +83,7 @@
         "Seed": 0,
         "SolutionLimit": 10000,
         "Threads": 8,
-        "TimeLimit": 28800
+        "TimeLimit": 14400
     },
     "LoadingProblemParams":{
     "ProblemVariant": "AllConstraints",

@@ -107,6 +107,21 @@ class LoadingChecker
         return mCompleteFeasSeqWithTimeStamps;
     };
 
+    [[nodiscard]] std::unordered_map<double, Collections::IdVector> GetInfeasibleRoutesWithTimeStamps()
+    {
+        return mCompleteInfeasSeqWithTimeStamps;
+    };
+
+    [[nodiscard]] std::unordered_map<double, Collections::IdVector> GetUnknownRoutesWithTimeStamps()
+    {
+        return mCompleteUnknownSeqWithTimeStamps;
+    };
+
+    [[nodiscard]] std::unordered_map<double, Collections::IdVector> GetInvalidRoutesWithTimeStamps()
+    {
+        return mCompleteInvalidSeqWithTimeStamps;
+    };
+
     void AddTailTournamentConstraint(const Collections::IdVector& sequence)
     {
         auto elapsed = GetElapsedTime();
@@ -115,6 +130,31 @@ class LoadingChecker
     [[nodiscard]] std::unordered_map<double, Collections::IdVector> GetTailTournamentConstraints() const
     {
         return mTailTournamentConstraintsWithTimeStamps;
+    }
+
+    // TODO Possible reallocate back to private 
+    void AddInfeasibleRoute(const Collections::IdVector& route);
+    void AddFeasibleRoute(const Collections::IdVector& route);
+    void AddUnknownRoute(const Collections::IdVector& route);
+    void AddInvalidRoute(const Collections::IdVector& route);
+
+
+    [[nodiscard]] bool RouteIsInFeasSequences(const Collections::IdVector& route,
+                                              LoadingFlag mask) const
+    {
+        return mFeasSequences.at(mask).contains(route);
+    }
+
+    [[nodiscard]] bool RouteIsInInfSequences(const Collections::IdVector& route,
+                                             LoadingFlag mask) const
+    {
+        return mInfSequences.at(mask).contains(route);
+    }
+
+    [[nodiscard]] bool RouteIsInUnkSequences(const Collections::IdVector& route,
+                                             LoadingFlag mask) const
+    {
+        return mUnkSequences.at(mask).contains(route);
     }
 
   private:
@@ -126,6 +166,9 @@ class LoadingChecker
     Collections::SequenceSet mEPHeurInfSequences;
     Collections::SequenceVector mCompleteFeasSeq;
     std::unordered_map<double, Collections::IdVector> mCompleteFeasSeqWithTimeStamps;
+    std::unordered_map<double, Collections::IdVector> mCompleteInfeasSeqWithTimeStamps;
+    std::unordered_map<double, Collections::IdVector> mCompleteUnknownSeqWithTimeStamps;
+    std::unordered_map<double, Collections::IdVector> mCompleteInvalidSeqWithTimeStamps;
     std::unordered_map<double, Collections::IdVector> mTailTournamentConstraintsWithTimeStamps;
 
     /// Set of customer combinations that are infeasible.
@@ -144,8 +187,6 @@ class LoadingChecker
 
     [[nodiscard]] bool SequenceIsHeuristicallyInfeasibleEP(const Collections::IdVector& sequence) const;
     void AddInfeasibleSequenceEP(const Collections::IdVector& sequence);
-
-    void AddFeasibleRoute(const Collections::IdVector& route);
 
     [[nodiscard]] bool SequenceIsInfeasibleCP(const Collections::IdVector& sequence, LoadingFlag mask) const;
     [[nodiscard]] bool SequenceIsUnknownCP(const Collections::IdVector& sequence, LoadingFlag mask) const;

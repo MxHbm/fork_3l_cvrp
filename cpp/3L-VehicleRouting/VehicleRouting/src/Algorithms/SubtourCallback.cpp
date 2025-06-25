@@ -24,12 +24,18 @@ using namespace Heuristics::Improvement;
 
 void SubtourCallback::SaveFeasibleAndPotentiallyExcludedRoutes() const
 {
-    const auto allRoutes = mLoadingChecker->GetFeasibleRoutesWithTimeStamps();
+    const auto allFeasibleRoutes = mLoadingChecker->GetFeasibleRoutesWithTimeStamps();
+    const auto allInfeasibleRoutes = mLoadingChecker->GetInfeasibleRoutesWithTimeStamps();
+    const auto allUnknownRoutes = mLoadingChecker->GetUnknownRoutesWithTimeStamps();
+    const auto allInvalidRoutes = mLoadingChecker->GetInvalidRoutesWithTimeStamps();
     const auto allTournamentTailConstraints = mLoadingChecker->GetTailTournamentConstraints();
 
     nlohmann::json jsonObj;
-    jsonObj["AllFeasibleRoutes"] = allRoutes;
-    jsonObj["AllTournamentTailConstraints"] = allTournamentTailConstraints;
+    jsonObj["AllFeasibleRoutes"] = allFeasibleRoutes;
+    jsonObj["AllInFeasibleRoutes"] = allInfeasibleRoutes;
+    jsonObj["AllUnknownRoutes"] = allUnknownRoutes;
+    jsonObj["AllInvalidRoutes"] = allInvalidRoutes;
+    //jsonObj["AllTournamentTailConstraints"] = allTournamentTailConstraints;
 
     std::ofstream outputFile;
     outputFile.open(mOutputPath + "/Routes_" + mInstance->Name + ".json");
@@ -756,13 +762,16 @@ bool SubtourCallback3D::CheckRoutes()
 
 LoadingStatus SubtourCallback3D::CheckSingleVehicleSubtour(const Subtour& subtour, Container& container)
 {
+    // TODO Add here in every branch, that route is saved 
     if (RouteCheckedAndFeasible(subtour.Sequence))
     {
+        mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
         return LoadingStatus::FeasOpt;
     }
 
     if (CustomerCombinationInfeasible(subtour.Sequence, subtour.CustomersInRoute))
     {
+        mLoadingChecker->AddInfeasibleRoute(subtour.Sequence);
         return LoadingStatus::Infeasible;
     }
 
@@ -770,10 +779,33 @@ LoadingStatus SubtourCallback3D::CheckSingleVehicleSubtour(const Subtour& subtou
 
     if (CheckRouteHeuristic(subtour.Sequence, container, selectedItems))
     {
+        mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
         return LoadingStatus::FeasOpt;
     }
 
-    return CheckRouteExact(subtour, container, selectedItems);
+    auto status = CheckRouteExact(subtour, container, selectedItems);
+    if (status == LoadingStatus::FeasOpt)
+    {
+       mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
+       return LoadingStatus::FeasOpt;
+    }
+
+    if (status == LoadingStatus::Infeasible)
+    {
+        mLoadingChecker->AddInfeasibleRoute(subtour.Sequence);
+    }
+
+    if (status == LoadingStatus::Unknown)
+    {
+        mLoadingChecker->AddUnknownRoute(subtour.Sequence);
+    }
+
+    if (status == LoadingStatus::Invalid)
+    {
+        mLoadingChecker->AddInvalidRoute(subtour.Sequence);
+    }
+
+    return status;
 }
 
 bool SubtourCallback3D::CheckRouteHeuristic(const Collections::IdVector& sequence,

@@ -298,6 +298,24 @@ void LoadingChecker::AddFeasibleRoute(const Collections::IdVector& route)
     mCompleteFeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
 }
 
+void LoadingChecker::AddInfeasibleRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteInfeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
+void LoadingChecker::AddUnknownRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteUnknownSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
+void LoadingChecker::AddInvalidRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteInvalidSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
 void LoadingChecker::AddInfeasibleSequenceEP(const Collections::IdVector& sequence)
 {
     mEPHeurInfSequences.insert(sequence);
@@ -417,6 +435,8 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (SequenceIsInfeasibleCP(sequence, mask))
         {
             ////std::cout << "Sequence already stored as infeasible (CP)." << "\n";
+            // TODO what to include here?
+            //AddInfeasibleRoute(sequence);
             return LoadingStatus::Infeasible;
         }
 
@@ -429,6 +449,8 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (!isCallTypeExact && SequenceIsUnknownCP(sequence, mask))
         {
             ////std::cout << "Sequence already stored as unknown (CP)." << "\n";
+            // TODO what to include here?
+            //AddInfeasibleRoute(sequence);
             return LoadingStatus::Unknown;
         }
     }
@@ -437,16 +459,21 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (SetIsInfeasibleCP(set, mask))
         {
             ////std::cout << "Set already stored as infeasible (CP)." << "\n";
+            // TODO what to include here?
+            // AddInfeasibleRoute(sequence);
             return LoadingStatus::Infeasible;
         }
 
         if (SetIsFeasibleCP(set, mask))
         {
             ////std::cout << "Set already stored as feasible (CP)." << "\n";
+            //TODO Change back 
+            /*
             if (mask == Parameters.LoadingProblem.LoadingFlags && !SequenceIsFeasible(sequence, mask))
             {
-                AddFeasibleRoute(sequence);
+                //AddFeasibleRoute(sequence);
             }
+            */
 
             return LoadingStatus::FeasOpt;
         }
@@ -454,10 +481,13 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (!isCallTypeExact && SetIsUnknownCP(set, mask))
         {
             ////std::cout << "Set already stored as unknown (CP)." << "\n";
+            // TODO what to include here?
+            // AddInfeasibleRoute(sequence);
             return LoadingStatus::Unknown;
         }
     }
-
+    // TODO what to include here?
+    //AddInfeasibleRoute(sequence);
     return LoadingStatus::Invalid;
 }
 

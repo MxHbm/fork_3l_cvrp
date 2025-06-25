@@ -73,14 +73,15 @@ void BranchAndCutSolver::Initialize()
         {
             continue;
         }
-
+        double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
         auto exactStatus =
             mLoadingChecker->ConstraintProgrammingSolver(PackingType::Complete,
                                                          containers[0],
                                                          mLoadingChecker->MakeBitset(mInstance->Nodes.size(), route),
                                                          route,
                                                          items,
-                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                                                         maxRuntime);
 
         if (exactStatus != LoadingStatus::FeasOpt)
         {
@@ -92,7 +93,8 @@ void BranchAndCutSolver::Initialize()
                 mLoadingChecker->MakeBitset(mInstance->Nodes.size(), route),
                 route,
                 items,
-                mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                maxRuntime);
 
             if (relStatus != LoadingStatus::FeasOpt)
             {
@@ -407,6 +409,7 @@ std::vector<Route> BranchAndCutSolver::SetGivenStartSolution()
         logFile << feasStatusHeur << " with packing heuristic : " << std::to_string(clock.elapsed()) << " | ";
         totalTimeHeur += clock.elapsed();
 
+        double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
         clock.start();
         auto exactStatus =
             mLoadingChecker->ConstraintProgrammingSolver(PackingType::Complete,
@@ -414,7 +417,8 @@ std::vector<Route> BranchAndCutSolver::SetGivenStartSolution()
                                                          mLoadingChecker->MakeBitset(mInstance->Nodes.size(), sequence),
                                                          sequence,
                                                          selectedItems,
-                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                                                         maxRuntime);
         clock.end();
 
         if (exactStatus == LoadingStatus::FeasOpt)
@@ -530,6 +534,7 @@ std::vector<Route> BranchAndCutSolver::SetHardCodedStartSolution()
         mLogFile << feasStatusHeur << " with packing heuristic : " << std::to_string(clock.elapsed()) << " | ";
         totalTimeHeur += clock.elapsed();
 
+        double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
         clock.start();
         auto exactStatus =
             mLoadingChecker->ConstraintProgrammingSolver(PackingType::Complete,
@@ -537,7 +542,8 @@ std::vector<Route> BranchAndCutSolver::SetHardCodedStartSolution()
                                                          mLoadingChecker->MakeBitset(mInstance->Nodes.size(), sequence),
                                                          sequence,
                                                          selectedItems,
-                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                                                         mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                                                         maxRuntime);
         clock.end();
 
         if (exactStatus == LoadingStatus::FeasOpt)
@@ -646,28 +652,30 @@ bool BranchAndCutSolver::CheckPath(const Collections::IdVector& path, Container&
             return true;
         }
     }
-
+    double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::ExactLimit);
     auto statusSupportRelaxation =
         mLoadingChecker->ConstraintProgrammingSolver(PackingType::NoSupport,
                                                      container,
                                                      mLoadingChecker->MakeBitset(mInstance->Nodes.size(), path),
                                                      path,
                                                      items,
-                                                     mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                                                     mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                                                     maxRuntime);
 
     if (statusSupportRelaxation == LoadingStatus::Infeasible)
     {
         mInfeasibleArcs.emplace_back(0, path.front(), path.back());
         return false;
     }
-
+    double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
     auto statusComplete =
         mLoadingChecker->ConstraintProgrammingSolver(PackingType::Complete,
                                                      container,
                                                      mLoadingChecker->MakeBitset(mInstance->Nodes.size(), path),
                                                      path,
                                                      items,
-                                                     mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                                                     mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                                                     maxRuntime);
 
     if (statusComplete == LoadingStatus::Infeasible)
     {
@@ -729,13 +737,15 @@ void BranchAndCutSolver::DetermineExtendedInfeasiblePath()
 
             if (heuristicStatus == LoadingStatus::Infeasible)
             {
+                double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::ExactLimit);
                 auto statusSupportRelaxation = mLoadingChecker->ConstraintProgrammingSolver(
                     PackingType::NoSupport,
                     container,
                     mLoadingChecker->MakeBitset(mInstance->Nodes.size(), path),
                     path,
                     selectedItems,
-                    mInputParameters.IsExact(BranchAndCutParams::CallType::Exact));
+                    mInputParameters.IsExact(BranchAndCutParams::CallType::Exact),
+                    maxRuntime);
 
                 if (statusSupportRelaxation == LoadingStatus::Infeasible)
                 {
@@ -892,6 +902,7 @@ void BranchAndCutSolver::Solve()
                                                     &mInputParameters,
                                                     mOutputPath);
     branchAndCut.SetCallback(callback.get());
+
     branchAndCut.Solve(mInputParameters.MIPSolver);
 
     mTimer.BranchAndCut = std::chrono::system_clock::now() - start;
