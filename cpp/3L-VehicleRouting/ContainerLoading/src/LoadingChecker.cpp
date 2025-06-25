@@ -467,13 +467,12 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (SetIsFeasibleCP(set, mask))
         {
             ////std::cout << "Set already stored as feasible (CP)." << "\n";
-            //TODO Change back 
-            /*
+
             if (mask == Parameters.LoadingProblem.LoadingFlags && !SequenceIsFeasible(sequence, mask))
             {
-                //AddFeasibleRoute(sequence);
+                AddFeasibleRoute(sequence);
             }
-            */
+
 
             return LoadingStatus::FeasOpt;
         }
