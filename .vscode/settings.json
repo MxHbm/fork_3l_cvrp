@@ -10,9 +10,9 @@
     "cmake.debugConfig": {
         "args": [
             "-i",
-            "${workspaceFolder}/data/input/3l-cvrp/krebs/",
+            "${workspaceFolder}/data/input/3l-cvrp/gendreau/",
             "-f",
-            "038_n020_m200_bt10.json",
+            "3l_cvrp01.json",
             "-o",
             "${workspaceFolder}/data/output/3l-cvrp/test/",
             "-p",
@@ -23,7 +23,7 @@
                 "name": "PATH",
                 "value": "C:/Program Files/or-tools_9.14/bin;${env:PATH}"
             }
-        ]
+            ],
     },
     "editor.formatOnSave": true,
     "files.associations": {
