@@ -667,7 +667,7 @@ bool BranchAndCutSolver::CheckPath(const Collections::IdVector& path, Container&
         mInfeasibleArcs.emplace_back(0, path.front(), path.back());
         return false;
     }
-    double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
+    maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
     auto statusComplete =
         mLoadingChecker->ConstraintProgrammingSolver(PackingType::Complete,
                                                      container,
