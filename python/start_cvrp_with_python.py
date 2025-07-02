@@ -3,16 +3,17 @@ import subprocess
 import multiprocessing
 import time
 
+env = os.environ.copy()
+
 # Define the directory path and command components
-directory_path = r"C:\Users\mahu123a\Documents\3l-cvrp"
-command_base =  r"C:\Users\mahu123a\Documents\3l-cvrp/build/Release/bin/Release/3L-VehicleRoutingApplication.exe"
-output_folder = r"C:\Users\mahu123a\Documents\3l-cvrp/data/output/3l-cvrp/all-constraints-train-data-classifier/krebs/"
-input_folder =r"C:\Users\mahu123a\Documents\3l-cvrp/data/input/3l-cvrp/krebs/"
-parameter_file = r"C:\Users\mahu123a\Documents\3l-cvrp/data/input/3l-cvrp/parameters/BenchmarkParameters_AllConstraints.json"
+directory_path = os.getcwd()
+command_base =  os.path.join(directory_path,"build/Release/bin/Release/3L-VehicleRoutingApplication.exe")
+output_folder = os.path.join(directory_path,"data/output/3l-cvrp/all-constraints-train-data-classifier/krebs_8hours/")
+input_folder = os.path.join(directory_path,"data/input/3l-cvrp/krebs/")
+parameter_file = os.path.join(directory_path,"data/input/3l-cvrp/parameters/BenchmarkParameters_AllConstraints.json")
 number_of_processes = 3
 
 # Navigate to the directorys
-os.chdir(directory_path)
 
 def add_tasks(task_queue, folder_path=input_folder):
     # List all files in the folder
@@ -28,14 +29,20 @@ def add_tasks(task_queue, folder_path=input_folder):
 
 def run_foster_exe(filename, counter, lock):
 
-    command = f'"{command_base}" -i "{input_folder}" -f "{filename}" -o "{output_folder}" -p "{parameter_file}"'
+    command = [
+    command_base,
+    "-i", input_folder,
+    "-f", filename,
+    "-o", output_folder,
+    "-p", parameter_file
+    ]
     
     try:
         #subprocess.run(f"start cmd /c {command} & exit", shell=True, check=True, capture_output=True, cwd = directory_path)
         print(f"Starting: {filename} \n")
         print(f"Command: {command} \n")
 
-        subprocess.run(command, check=True, shell = True, capture_output=True,  cwd = directory_path)
+        subprocess.run(command, check=True, capture_output=True, cwd = directory_path)
         print(f"Finished: {filename} \n")
 
         # Warten, bevor der nächste Task gestartet wird
@@ -81,3 +88,4 @@ def run():
 
 if __name__ == "__main__":
     run()
+

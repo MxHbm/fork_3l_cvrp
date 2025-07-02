@@ -16,36 +16,36 @@
         "StartSolution": "ModifiedSavings",
         "TimeLimit": [
             [
-              "Exact",
-              600.0
+            "Exact",
+            600.0
             ],
             [
-              "ExactLimit",
-              30.0
+                "ExactLimit",
+                60.0
             ],
             [
-              "Heuristic",
-                1
+                "Heuristic",
+                300.0
             ],
             [
-              "TwoPath",
-              10.0
+                "TwoPath",
+                60.0
             ],
             [
-              "MinInfSet",
-              10.0
+                "MinInfSet",
+                60.0
             ],
             [
-              "RegularPath",
-              10.0
+                "RegularPath",
+                60.0
             ],
             [
-              "MinInfPath",
-              10.0
+                "MinInfPath",
+                60.0
             ],
             [
-              "ReversePath",
-              10.0
+                "ReversePath",
+                60.0
             ]
         ]
     },
@@ -83,7 +83,7 @@
         "Seed": 0,
         "SolutionLimit": 10000,
         "Threads": 8,
-        "TimeLimit": 14400
+        "TimeLimit": 28800
     },
     "LoadingProblemParams":{
     "ProblemVariant": "AllConstraints",

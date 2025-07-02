@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 
+
 namespace ResultWriter
 {
 namespace SolutionValidator

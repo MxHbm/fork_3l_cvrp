@@ -133,7 +133,17 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "barrier": "cpp",
+        "expected": "cpp",
+        "generator": "cpp",
+        "latch": "cpp",
+        "mdspan": "cpp",
+        "print": "cpp",
+        "spanstream": "cpp",
+        "stacktrace": "cpp",
+        "stdfloat": "cpp",
+        "syncstream": "cpp"
     },
     "clangd.arguments": [
         "--compile-commands-dir=build/Release"
