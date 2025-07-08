@@ -4,6 +4,8 @@ build/
 # results
 data/output/3l-cvrp/test/
 
+data/
+
 # python
 python/visualization/__pycache__/
 python/.venv/

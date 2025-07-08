@@ -12,39 +12,40 @@
         "IntraRouteFullEnumThreshold": 6,
         "MinVehicleLiftingThreshold": 0.5,
         "SetPartHeurThreshold": 20,
+        "TrackIncrementalFeasibilityProperty": true,
         "StartSolution": "ModifiedSavings",
         "TimeLimit": [
             [
-                "Exact",
-                1.7976931348623157e+308
+            "Exact",
+            600.0
             ],
             [
                 "ExactLimit",
-                1
+                60.0
             ],
             [
                 "Heuristic",
-                1
+                300.0
             ],
             [
                 "TwoPath",
-                4
+                60.0
             ],
             [
                 "MinInfSet",
-                4
+                60.0
             ],
             [
                 "RegularPath",
-                1
+                60.0
             ],
             [
                 "MinInfPath",
-                1
+                60.0
             ],
             [
                 "ReversePath",
-                1
+                60.0
             ]
         ]
     },

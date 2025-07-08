@@ -91,11 +91,13 @@ LoadingStatus LoadingChecker::ConstraintProgrammingSolver(PackingType packingTyp
 
     if (status == LoadingStatus::Invalid)
     {
+        this->AddInvalidRoute(stopIds);
         throw std::runtime_error("Loading status invalid in CP model!");
     }
 
     if (isCallTypeExact && status == LoadingStatus::Unknown)
     {
+        this->AddUnknownRoute(stopIds);
         return LoadingStatus::Invalid;
     }
 
@@ -283,10 +285,37 @@ boost::dynamic_bitset<> LoadingChecker::MakeBitset(size_t size, const Collection
     return set;
 };
 
+double LoadingChecker::GetElapsedTime()
+{
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - mStartTime;
+    return elapsed.count();
+}
+
 void LoadingChecker::AddFeasibleRoute(const Collections::IdVector& route)
 {
     mFeasSequences[Parameters.LoadingProblem.LoadingFlags].insert(route);
     mCompleteFeasSeq.push_back(route);
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteFeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
+void LoadingChecker::AddInfeasibleRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteInfeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
+void LoadingChecker::AddUnknownRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteUnknownSeqWithTimeStamps.insert({elapsedAsDouble, route});
+}
+
+void LoadingChecker::AddInvalidRoute(const Collections::IdVector& route)
+{
+    double elapsedAsDouble = GetElapsedTime();
+    mCompleteInvalidSeqWithTimeStamps.insert({elapsedAsDouble, route});
 }
 
 void LoadingChecker::AddInfeasibleSequenceEP(const Collections::IdVector& sequence)
@@ -408,6 +437,8 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (SequenceIsInfeasibleCP(sequence, mask))
         {
             ////std::cout << "Sequence already stored as infeasible (CP)." << "\n";
+            // TODO what to include here?
+            //AddInfeasibleRoute(sequence);
             return LoadingStatus::Infeasible;
         }
 
@@ -420,6 +451,8 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (!isCallTypeExact && SequenceIsUnknownCP(sequence, mask))
         {
             ////std::cout << "Sequence already stored as unknown (CP)." << "\n";
+            // TODO what to include here?
+            //AddInfeasibleRoute(sequence);
             return LoadingStatus::Unknown;
         }
     }
@@ -428,16 +461,20 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (SetIsInfeasibleCP(set, mask))
         {
             ////std::cout << "Set already stored as infeasible (CP)." << "\n";
+            // TODO what to include here?
+            // AddInfeasibleRoute(sequence);
             return LoadingStatus::Infeasible;
         }
 
         if (SetIsFeasibleCP(set, mask))
         {
             ////std::cout << "Set already stored as feasible (CP)." << "\n";
+
             if (mask == Parameters.LoadingProblem.LoadingFlags && !SequenceIsFeasible(sequence, mask))
             {
                 AddFeasibleRoute(sequence);
             }
+
 
             return LoadingStatus::FeasOpt;
         }
@@ -445,10 +482,13 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
         if (!isCallTypeExact && SetIsUnknownCP(set, mask))
         {
             ////std::cout << "Set already stored as unknown (CP)." << "\n";
+            // TODO what to include here?
+            // AddInfeasibleRoute(sequence);
             return LoadingStatus::Unknown;
         }
     }
-
+    // TODO what to include here?
+    //AddInfeasibleRoute(sequence);
     return LoadingStatus::Invalid;
 }
 
@@ -476,20 +516,24 @@ void LoadingChecker::AddStatus(const Collections::IdVector& sequence,
         {
             case LoadingStatus::FeasOpt:
             {
+                AddFeasibleRoute(sequence);
                 mFeasSequences[mask].insert(sequence);
                 return;
             }
             case LoadingStatus::Infeasible:
             {
+                AddInfeasibleRoute(sequence);
                 mInfSequences[mask].insert(sequence);
                 return;
             }
             case LoadingStatus::Unknown:
             {
+                AddUnknownRoute(sequence);
                 mUnkSequences[mask].insert(sequence);
                 return;
             }
             default:
+                AddInvalidRoute(sequence);
                 throw std::runtime_error("LoadingStatus invalid!");
         }
     }

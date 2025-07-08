@@ -182,7 +182,7 @@ def get_solver_data_from_json(file):
 def get_solution_data_from_json(file):
     solution = json.loads(file)
 
-    loading_variant = solution["ProblemVariant"]
+    loading_variant = solution["InputParameters"]["LoadingProblemParams"]["ProblemVariant"]
     costs = solution["Solution"]["Costs"]
     number_vehicles = solution["Solution"]["NumberRoutes"]
 

@@ -140,6 +140,7 @@ def plot_element_count_sankey(element_data, value, consider_memory_mgmt=True):
 
 def plot_element_bar(element_data):
     count_data = element_data["Count"]
+    # TODO Check if Single Vehicle is always there and present! 
     time_data = element_data["Time"] / 1e6
     bars = [
         ["Operation", "Count", "Time"],

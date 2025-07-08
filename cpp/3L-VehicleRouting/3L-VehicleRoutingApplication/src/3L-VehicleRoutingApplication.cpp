@@ -104,6 +104,7 @@ int main(int argc, char** argv)
     // For example, call with: -i "data/3LVRP/ConvertedInstances/" -f "E016-05m.json" -o "data/3LVRP/Output/"
     CLI::App app;
 
+
     std::string inputFilePath = "default";
     std::string filename = "default";
     std::string outdir = "default";
@@ -119,6 +120,8 @@ int main(int argc, char** argv)
                    enableTimeSuffix,
                    "If the current time should be appended to the output path as a subfolder (1=true, 0=false)");
     app.add_option("-s,--seedOffset", seedOffset, "The offset to the internal seed");
+
+    
 
     CLI11_PARSE(app, argc, argv);
 

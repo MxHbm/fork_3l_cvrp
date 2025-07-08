@@ -9,7 +9,7 @@
                 "-i",
                 "${workspaceFolder}/data/input/3l-cvrp/",
                 "-f",
-                "E023-03g.json",
+                "3l_cvrp01.json",
                 "-o",
                 "${workspaceFolder}/data/output/3l-cvrp/test/",
                 "-p",
