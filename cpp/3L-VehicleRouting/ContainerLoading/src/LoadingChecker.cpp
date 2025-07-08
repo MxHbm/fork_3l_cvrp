@@ -91,11 +91,13 @@ LoadingStatus LoadingChecker::ConstraintProgrammingSolver(PackingType packingTyp
 
     if (status == LoadingStatus::Invalid)
     {
+        this->AddInvalidRoute(stopIds);
         throw std::runtime_error("Loading status invalid in CP model!");
     }
 
     if (isCallTypeExact && status == LoadingStatus::Unknown)
     {
+        this->AddUnknownRoute(stopIds);
         return LoadingStatus::Invalid;
     }
 
@@ -514,20 +516,24 @@ void LoadingChecker::AddStatus(const Collections::IdVector& sequence,
         {
             case LoadingStatus::FeasOpt:
             {
+                AddFeasibleRoute(sequence);
                 mFeasSequences[mask].insert(sequence);
                 return;
             }
             case LoadingStatus::Infeasible:
             {
+                AddInfeasibleRoute(sequence);
                 mInfSequences[mask].insert(sequence);
                 return;
             }
             case LoadingStatus::Unknown:
             {
+                AddUnknownRoute(sequence);
                 mUnkSequences[mask].insert(sequence);
                 return;
             }
             default:
+                AddInvalidRoute(sequence);
                 throw std::runtime_error("LoadingStatus invalid!");
         }
     }
