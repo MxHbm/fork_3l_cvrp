@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-
+cmake_policy(SET CMP0144 NEW)
 project(3L-VehicleRouting VERSION 0.9 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -14,16 +14,16 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 if(UNIX)
     set(ORTOOLS_ROOT "${ORTOOLS_ROOT_UNIX}")
-    set(BOOST_ROOT "${BOOST_ROOT_UNIX}")
+    set(Boost_ROOT "${Boost_ROOT_UNIX}")
     set(GUROBI_DIR "${GUROBI_ROOT_UNIX}")
 else()
     set(ORTOOLS_ROOT "${ORTOOLS_ROOT_WIN}")
-    set(BOOST_ROOT "${BOOST_ROOT_WIN}")
+    set(Boost_ROOT "${Boost_ROOT_WIN}")
     set(GUROBI_DIR "${GUROBI_ROOT_WIN}")
 endif()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${ORTOOLS_ROOT})
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${BOOST_ROOT})
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${Boost_ROOT})
 message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
 
 # OR-Tools has only a Release lib

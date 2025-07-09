@@ -57,7 +57,7 @@ find_package(GUROBI REQUIRED)
 # list(APPEND CMAKE_PREFIX_PATH "C:/Program Files/or-tools")
 # set(ORTOOLS_ROOT "C:/Program Files/or-tools")
 # list(APPEND CMAKE_PREFIX_PATH ${ORTOOLS_ROOT})
-find_package(ortools CONFIG REQUIRED)
+find_package(ORTOOLS CONFIG REQUIRED)
 
 if(${ortools_FOUND})
   message(STATUS "ORTOOLS: ${ortools_FOUND}")
