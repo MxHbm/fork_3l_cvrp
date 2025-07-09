@@ -54,7 +54,8 @@ void FullEnumerationSearch::Run(const Instance* const instance,
 
         if (!loadingChecker->Parameters.LoadingProblem.EnableLifo && loadingChecker->RouteIsInFeasSequences(newRoute))
         {
-            loadingChecker->AddFeasibleSequenceFromOutside(sequence);
+            loadingChecker->AddFeasibleRoute(sequence);
+            loadingChecker->AddFeasibleSequenceMask(sequence);
             break;
         }
 

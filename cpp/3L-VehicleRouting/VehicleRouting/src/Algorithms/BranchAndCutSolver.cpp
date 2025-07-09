@@ -1009,7 +1009,11 @@ void BranchAndCutSolver::DeterminePackingSolution()
 
         double maxRuntime = mInputParameters.DetermineMaxRuntime(BranchAndCutParams::CallType::Exact);
         auto exactStatus = mLoadingChecker->ConstraintProgrammingSolverGetPacking(
-            PackingType::Complete, container, stopIds, selectedItems, maxRuntime);
+                                                    PackingType::Complete,
+                                                    container,
+                                                    stopIds,
+                                                    selectedItems,
+                                                    maxRuntime);
 
         std::string feasStatusCP = exactStatus == LoadingStatus::FeasOpt ? "feasible" : "infeasible";
         mLogFile << feasStatusCP << " with CP model"

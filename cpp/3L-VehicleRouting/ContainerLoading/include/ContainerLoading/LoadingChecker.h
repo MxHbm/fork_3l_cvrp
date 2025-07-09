@@ -92,7 +92,7 @@ class LoadingChecker
     [[nodiscard]] size_t GetNumberOfFeasibleRoutes() const;
     [[nodiscard]] size_t GetSizeInfeasibleCombinations() const;
 
-    void AddFeasibleSequenceFromOutside(const Collections::IdVector& route);
+    void AddFeasibleSequenceMask(const Collections::IdVector& route);
 
     [[nodiscard]] bool RouteIsInFeasSequences(const Collections::IdVector& route) const;
 

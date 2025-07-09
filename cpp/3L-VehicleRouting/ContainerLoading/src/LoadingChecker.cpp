@@ -101,7 +101,9 @@ LoadingStatus LoadingChecker::ConstraintProgrammingSolver(PackingType packingTyp
         return LoadingStatus::Invalid;
     }
 
-    AddStatus(stopIds, set, loadingMask, status);
+    if(packingType == PackingType::Complete){
+        AddStatus(stopIds, set, loadingMask, status);
+    }
 
     return status;
 }
@@ -257,7 +259,12 @@ size_t LoadingChecker::GetNumberOfFeasibleRoutes() const { return mCompleteFeasS
 
 size_t LoadingChecker::GetSizeInfeasibleCombinations() const { return mInfeasibleCustomerCombinations.size(); };
 
-void LoadingChecker::AddFeasibleSequenceFromOutside(const Collections::IdVector& route) { AddFeasibleRoute(route); }
+void LoadingChecker::AddFeasibleSequenceMask(const Collections::IdVector& route) {
+
+    mFeasSequences[Parameters.LoadingProblem.LoadingFlags].insert(route);
+    mCompleteFeasSeq.push_back(route);
+
+};
 
 bool LoadingChecker::RouteIsInFeasSequences(const Collections::IdVector& route) const
 {
@@ -294,8 +301,6 @@ double LoadingChecker::GetElapsedTime()
 
 void LoadingChecker::AddFeasibleRoute(const Collections::IdVector& route)
 {
-    mFeasSequences[Parameters.LoadingProblem.LoadingFlags].insert(route);
-    mCompleteFeasSeq.push_back(route);
     double elapsedAsDouble = GetElapsedTime();
     mCompleteFeasSeqWithTimeStamps.insert({elapsedAsDouble, route});
 }
@@ -472,6 +477,7 @@ LoadingStatus LoadingChecker::GetPrecheckStatusCP(const Collections::IdVector& s
 
             if (mask == Parameters.LoadingProblem.LoadingFlags && !SequenceIsFeasible(sequence, mask))
             {
+                AddFeasibleSequenceMask(sequence);
                 AddFeasibleRoute(sequence);
             }
 
@@ -501,6 +507,7 @@ void LoadingChecker::AddStatus(const Collections::IdVector& sequence,
     if (status == LoadingStatus::FeasOpt && mask == Parameters.LoadingProblem.LoadingFlags)
     {
         AddFeasibleRoute(sequence);
+        AddFeasibleSequenceMask(sequence);
         if (!IsSet(mask, LoadingFlag::Lifo))
         {
             mFeasibleSets[mask].push_back(set);

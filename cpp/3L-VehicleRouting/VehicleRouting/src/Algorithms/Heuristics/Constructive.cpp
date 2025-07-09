@@ -116,7 +116,8 @@ bool Savings::ConcatRoutes(Collections::IdVector& frontSequence,
 
     if (mInputParameters->ContainerLoading.LoadingProblem.LoadingFlags == LoadingFlag::NoneSet)
     {
-        mLoadingChecker->AddFeasibleSequenceFromOutside(frontSequence);
+        mLoadingChecker->AddFeasibleRoute(frontSequence);
+        mLoadingChecker->AddFeasibleSequenceMask(frontSequence);
         return true;
     }
     if (mLoadingChecker->RouteIsInFeasSequences(frontSequence))
@@ -336,7 +337,8 @@ bool ModifiedSavings::InsertionFeasible(Route& route, size_t nodeToInsert, size_
         route.Sequence = tmpSequence;
         route.TotalVolume += mInstance->Nodes[nodeToInsert].TotalVolume;
         route.TotalWeight += mInstance->Nodes[nodeToInsert].TotalWeight;
-        mLoadingChecker->AddFeasibleSequenceFromOutside(route.Sequence);
+        mLoadingChecker->AddFeasibleRoute(route.Sequence );
+        mLoadingChecker->AddFeasibleSequenceMask(route.Sequence );
 
         return true;
     }

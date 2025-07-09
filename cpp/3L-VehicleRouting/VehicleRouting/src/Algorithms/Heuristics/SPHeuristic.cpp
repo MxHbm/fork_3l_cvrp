@@ -86,7 +86,8 @@ void SPHeuristic::AddNewRoutes(auto& routes)
     {
         if (mInputParameters->ContainerLoading.LoadingProblem.LoadingFlags == LoadingFlag::NoneSet)
         {
-            mLoadingChecker->AddFeasibleSequenceFromOutside(route);
+            mLoadingChecker->AddFeasibleRoute(route);
+            mLoadingChecker->AddFeasibleSequenceMask(route);
             LocalSearch::RunIntraImprovement(mInstance, mLoadingChecker, mInputParameters, route);
             continue;
         }

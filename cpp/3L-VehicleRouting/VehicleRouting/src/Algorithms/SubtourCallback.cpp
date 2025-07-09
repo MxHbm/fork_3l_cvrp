@@ -660,7 +660,8 @@ bool SubtourCallback1D::CheckRoutes()
 
             if (minVehicles < 2)
             {
-                mLoadingChecker->AddFeasibleSequenceFromOutside(subtour.Sequence);
+                mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
+                mLoadingChecker->AddFeasibleSequenceMask(subtour.Sequence);
 
                 continue;
             }
@@ -765,7 +766,6 @@ LoadingStatus SubtourCallback3D::CheckSingleVehicleSubtour(const Subtour& subtou
     // TODO Add here in every branch, that route is saved 
     if (RouteCheckedAndFeasible(subtour.Sequence))
     {
-        mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
         return LoadingStatus::FeasOpt;
     }
 
@@ -779,31 +779,10 @@ LoadingStatus SubtourCallback3D::CheckSingleVehicleSubtour(const Subtour& subtou
 
     if (CheckRouteHeuristic(subtour.Sequence, container, selectedItems))
     {
-        mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
-        return LoadingStatus::FeasOpt;
-    }
-
-    auto status = CheckRouteExact(subtour, container, selectedItems);
-    if (status == LoadingStatus::FeasOpt)
-    {
-       mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
        return LoadingStatus::FeasOpt;
     }
 
-    if (status == LoadingStatus::Infeasible)
-    {
-        mLoadingChecker->AddInfeasibleRoute(subtour.Sequence);
-    }
-
-    if (status == LoadingStatus::Unknown)
-    {
-        mLoadingChecker->AddUnknownRoute(subtour.Sequence);
-    }
-
-    if (status == LoadingStatus::Invalid)
-    {
-        mLoadingChecker->AddInvalidRoute(subtour.Sequence);
-    }
+    auto status = CheckRouteExact(subtour, container, selectedItems);
 
     return status;
 }
@@ -918,19 +897,21 @@ LoadingStatus SubtourCallback3DAllSimple::CheckRouteExact(const Subtour& subtour
             LocalSearch::RunIntraImprovement(mInstance, mLoadingChecker, mInputParameters, subtour.Sequence);
             mClock.end();
             CallbackTracker.UpdateElement(CallbackElement::ExactFeas, mClock.elapsed());
-
+            mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
             return LoadingStatus::FeasOpt;
         case LoadingStatus::Infeasible:
             mClock.end();
             CallbackTracker.UpdateElement(CallbackElement::ExactInf, mClock.elapsed());
-
+            mLoadingChecker->AddInfeasibleRoute(subtour.Sequence);
             break;
         case LoadingStatus::Invalid:
             mClock.end();
             CallbackTracker.UpdateElement(CallbackElement::ExactInvalid, mClock.elapsed());
+            mLoadingChecker->AddInvalidRoute(subtour.Sequence);
             return LoadingStatus::Invalid;
         case LoadingStatus::Unknown:
             mClock.end();
+            mLoadingChecker->AddUnknownRoute(subtour.Sequence);
             throw std::runtime_error("LoadingStatus is Unknown after exact CP model in CheckRouteExact().");
     }
 
@@ -999,23 +980,23 @@ LoadingStatus
         case LoadingStatus::FeasOpt:
             LocalSearch::RunIntraImprovement(mInstance, mLoadingChecker, mInputParameters, subtour.Sequence);
             mClock.end();
-            CallbackTracker.UpdateElement(CallbackElement::ExactLimitFeas, mClock.elapsed());
-
+            CallbackTracker.UpdateElement(CallbackElement::ExactFeas, mClock.elapsed());
+            mLoadingChecker->AddFeasibleRoute(subtour.Sequence);
             return LoadingStatus::FeasOpt;
-        case LoadingStatus::Unknown:
-            mClock.end();
-            CallbackTracker.UpdateElement(CallbackElement::ExactLimitUnk, mClock.elapsed());
-
-            break;
         case LoadingStatus::Infeasible:
             mClock.end();
-            CallbackTracker.UpdateElement(CallbackElement::ExactLimitInf, mClock.elapsed());
-
+            CallbackTracker.UpdateElement(CallbackElement::ExactInf, mClock.elapsed());
+            mLoadingChecker->AddInfeasibleRoute(subtour.Sequence);
             break;
-        default:
+        case LoadingStatus::Invalid:
             mClock.end();
             CallbackTracker.UpdateElement(CallbackElement::ExactInvalid, mClock.elapsed());
+            mLoadingChecker->AddInvalidRoute(subtour.Sequence);
             return LoadingStatus::Invalid;
+        case LoadingStatus::Unknown:
+            mClock.end();
+            mLoadingChecker->AddUnknownRoute(subtour.Sequence);
+            throw std::runtime_error("LoadingStatus is Unknown after exact CP model in CheckRouteExact().");
     }
 
     if (Lifting(subtour, container, items))
