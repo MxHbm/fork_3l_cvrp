@@ -5,9 +5,12 @@ build/
 data/output/3l-cvrp/test/
 
 data/
+.vscode/
 
 # python
 python/visualization/__pycache__/
 python/.venv/
 # ruff
 .ruff_cache
+
+python/start_cvrp_with_python.py
