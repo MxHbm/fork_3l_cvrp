@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.18)
-cmake_policy(SET CMP0144 NEW)
 project(3L-VehicleRouting VERSION 0.9 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
